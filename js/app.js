@@ -33,7 +33,7 @@ const heroes = [
         alias: 'spawn',
         powers: ['immortality', 'super strength','regenerate', 'necroplasm manipulation'],
         franchise: 'image',
-        team: null,
+        team: [],
         alignment: true,
         rivals: ['violator', 'a devil', 'billy kinkaid', 'the redeemer'],
         species: 'hellspawn',
@@ -177,7 +177,7 @@ const heroes = [
         alias: 'kite man',
         powers: ['can fly kites'],
         franchise: 'dc',
-        team: null,
+        team: [],
         alignment: false,
         rivals: ['batman', 'catwoman', 'swamp thing'],
         species: 'human',
@@ -213,7 +213,7 @@ const heroes = [
         alias: 'dr doom',
         powers: ['magic', 'smart', 'money'],
         franchise: 'marvel',
-        team: null,
+        team: [],
         alignment: false,
         rivals: ['fantastic four', 'hulk', 'x-men', 'black panther', 'mephistio'],
         species: 'human',
@@ -285,7 +285,7 @@ const heroes = [
         alias: 'venom',
         powers: ['goop', 'symbiote suit', 'super strength'],
         franchise: 'marvel',
-        team: null,
+        team: [],
         alignment: false,
         rivals: ['spider-man', 'carnage', 'knull', 'shield'],
         species: 'alien',
@@ -435,46 +435,184 @@ const heroes = [
         species: 'mutant',
         firstApp: new Date('February 1, 1991')
     }
-]    
-
+]
 
 /** Build cards **/
+const row = document.getElementById('row')
 
-const buildCards =()=> {
+const makeList =(el, arr)=> {
 
-    const row = document.getElementById('row')
+    if (arr.length == 0) {
+        const li = document.createElement('li')
+
+        li.classList.add('list-group-item')
+
+        li.innerText = 'none'
+
+        el.appendChild(li)
+    }
+
+    arr.forEach(item => {
+        const li = document.createElement('li')
+        li.classList.add('list-group-item', 'text-capitalize')
+
+        li.innerText = item 
+
+        el.appendChild(li)
+        
+    })
+}
+
+const buildCards =(obj)=> {
+
 
     //make sure that row is empty
-    row.innerHTML = ''
+    // row.innerHTML = ''
 
     const column = document.createElement('div')
     column.classList.add('col')
 
     const card = document.createElement('div')
-    card.classList.add('card')
-    card.setAttribute('id', `card -${obj.id}`)
+    card.classList.add('card', 'h-100')
+    card.setAttribute('id', `card-${obj.id}`)
 
-    const alias = document.createElement('h2')
-    alias.classList.add('text-capitalize', 'display-5')
+    const cardBody = document.createElement('div')
+    cardBody.classList.add('card-body')
+
+    const cardHeader = document.createElement('div')
+    cardHeader.classList.add('card-header')
+
+    const alias = document.createElement('h4')
+    alias.classList.add('text-capitalize')
     alias.innerText = obj.alias
 
-    const heroName = documnet.createElement('p')
+    const heroName = document.createElement('p')
     heroName.classList.add('text-capitalize', 'fst-italic')
-    heroName.Name.InnerText =  obj.name
+    heroName.innerText = obj.name
 
+    const powersLabel = document.createElement('h3')
+    powersLabel.classList.add('text-capitalize', 'text-danger')
+    powersLabel.innerText = 'powers'
+
+    const powersList = document.createElement('ul')
+    powersList.classList.add('list-group', 'list-group-flush')
+
+    if (typeof(obj.powers) === 'object') {
+        makeList(powersList, obj.powers)
+    }
+
+    const teamsLabel = document.createElement('h3')
+    teamsLabel.classList.add('text-capitalize', 'text-primary')
+    teamsLabel.innerText = 'teams'
+
+    const teamsList = document.createElement('ul')
+    teamsList.classList.add('list-group', 'list-group-flush')
+
+    if (typeof(obj.team) === 'object') {
+        makeList(teamsList, obj.team)
+    }
+
+    const rivalsLabel = document.createElement('h3')
+    rivalsLabel.classList.add('text-capitalize', 'text-primary')
+    rivalsLabel.innerText = 'rivals'
+
+    const rivalsList = document.createElement('ul')
+    rivalsList.classList.add('list-group', 'list-group-flush')
+
+    if (typeof(obj.rivals) === 'object') {
+        makeList(rivalsList, obj.rivals)
+    }
+
+    // obj.rivals.forEach(rival => {
+    //     const li = document.createElement('li')
+    //     li.classList.add('list-group-item', 'text-capitalize')
+
+    //     li.innerText = rival 
+
+    //     rivalsList.appendChild(li)
+    // })
+
+    /**appendChild here!! */
+
+    const cardFooter = document.createElement('div')
+    cardFooter.classList.add('card-footer')
+
+    cardFooter.innerHTML = `
+        <p class="card-text">Species: ${obj.species}</p>
+        <p class="card-text">Franchise: ${obj.franchise}</p>
+        <p class="card-text">First App: ${obj.firstApp.getMonth() +1 }/${obj.firstApp.getFullYear()}</p`
 
     cardHeader.appendChild(alias)
     cardHeader.appendChild(heroName)
-    //append more children here to cardBody
+    // append more children here to cardBody 
 
-    cardBody.appendChild(cardHeader)
+    card.appendChild(cardHeader)
+
+    cardBody.appendChild(powersLabel)
+    cardBody.appendChild(powersList)
+
+    cardBody.appendChild(teamsLabel)
+    cardBody.appendChild(teamsList)
+
+    cardBody.appendChild(rivalsLabel)
+    cardBody.appendChild(rivalsList)
 
     card.appendChild(cardBody)
+    card.appendChild(cardFooter)
     column.appendChild(card)
 
     row.appendChild(column)
 
 }
 
-buildCards(heroes[0])
+// buildCards(heroes[0])
 
+// Abstract forEach loop
+// heroes.forEach(hero => buildCards(hero))
+
+const loadCards =(arr)=> {
+    arr.forEach(item => buildCards(item))
+}
+
+const loadBtn = document.getElementById('loadBtn')
+
+/**
+ * document.addEventListener(event, callBack function)
+ */
+loadBtn.addEventListener('click', (e)=> {
+    e.preventDefault()
+    row.innerHTML = ''
+
+    const filter = document.getElementById('filter').value 
+
+    //Object.keys(obj) => return an array of the keys of an object
+    //Object.values(obj) => returns an array of the values of an object
+
+    //arr.includes(item) => returns a boolean if item is in arr
+
+    let cards = heroes.filter(hero => Object.values(hero).includes(filter))
+
+
+    console.log(cards);
+    
+
+    loadCards(cards)
+})
+
+
+/**
+ * arr.filter() => return a copy array after an original array has been filtered through
+ */
+
+
+/*
+
+DECLARATIVE!
+let dcHeroes = []
+
+for (let hero of heroes) {
+    if (hero.franchise == 'dc') {
+        dcHeroes = [...dcHeroes, hero]
+    }
+}
+*/
